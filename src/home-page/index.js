@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import SignupForm from '../components/plain'
+//import SignupForm from '../components/plain'
+import SignupForm from '../components/redux-form'
 
 class HomePage extends Component {
   render() {

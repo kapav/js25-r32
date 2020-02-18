@@ -8,6 +8,7 @@ import HomePage from './home-page';
 import reducers from './store/reducers'
 
 const store = createStore(reducers)
+window.store = store
 
 ReactDOM.render(
   <Provider store={store}>

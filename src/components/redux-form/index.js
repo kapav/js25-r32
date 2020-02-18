@@ -12,33 +12,49 @@ import { signup, validateEmail/*, isValidEmail*/ } from '../../api';
 
 // submit
 
+function renderInputWithError({
+  input,
+  type,
+  label,
+  meta: { error, touched }
+}) {
+  return (
+    <label>
+      {label}:
+      <div>
+        <input {...input} type={type} />
+        {touched && error && <p className="error">
+          {error}
+        </p>}
+      </div>
+    </label>
+  )
+}
+
 class SignupForm extends Component {
   render() {
     return (
       <form className="form">
-        <label>
-          Email:
-          <div>
-            <input type="text" name="email" />
-            {handleErrors(this.state.errors, 'email')}
-          </div>
-        </label>
-        <label>
-          Password:
-          <div>
-            <input type="password" name="password" />
-            {handleErrors(this.state.errors, 'password')}
-          </div>
-        </label>
-        <label>
-          Password confirmation:
-          <div>
-            <input type="password" name="passwordConfirm" />
-            {handleErrors(this.state.errors, 'passwordConfirm')}
-          </div>
-        </label>
+        <Field
+          component={renderInputWithError}
+          type="text"
+          name="email"
+          label="Email"
+        />
+        <Field
+          component={renderInputWithError}
+          type="password"
+          name="password"
+          label="Password"
+        />
+        <Field
+          component={renderInputWithError}
+          type="password"
+          name="passwordConfirm"
+          label="Password confirmation"
+        />
 
-        <button type="submit" disabled={this.state.isSubmitting}>
+        <button type="submit">
           Submit
         </button>
       </form>
@@ -47,5 +63,22 @@ class SignupForm extends Component {
 }
 
 export default reduxForm({
+  validate: (values) => {
+    const errors = {}
+
+    if (!values.email) errors.email = 'Missing email';
+    if (!values.password) errors.password = 'Missing password';
+    if (!values.passwordConfirm) errors.passwordConfirm = 'Missing password confirmation';
+
+    if (Object.keys(errors).length) return errors
+
+    if (!values.email.includes('@')) errors.email = 'Incorrect email'
+
+    if (values.password !== values.passwordConfirm) {
+      errors.passwordConfirm = "Passwords don't match"
+    }
+
+    return errors
+  },
   form: 'signup'
 })(SignupForm);
