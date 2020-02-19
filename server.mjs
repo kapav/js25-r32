@@ -35,7 +35,7 @@ app.post('/signup', function(req, res) {
   if (errors.length) res.status(400).send({ isValid: false, errors });
 
   if (password !== passwordConfirm)
-    errors.push({ field: 'passwordConfirm', error: "Passwords doesn't match" });
+    errors.push({ field: 'passwordConfirm', error: "Passwords don't match" });
   if (!isValidEmail(email))
     errors.push({ field: 'email', error: 'Invalid email' });
 

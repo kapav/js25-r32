@@ -18,11 +18,15 @@
     "redux-thunk": "^2.3.0",
     "uuid": "^3.4.0"
   },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "nodemon --experimental-modules server.mjs"
   },
   "eslintConfig": {
     "extends": "react-app"
