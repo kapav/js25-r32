@@ -17,6 +17,17 @@ const isValidEmail = value =>
   !value.includes('@') ? 'Incorrect email' : ''
 const matchPasswords = (passwordConfirm, { password }) =>
   passwordConfirm !== password ? "Passwords don't coincide" : ''
+const asyncValidateEmail = email => {
+  return validateEmail(email).then(
+    r => {
+      console.log('validateEmail - первый параметр - r:', r)
+    },
+    e => {
+      console.log('validateEmail - второй параметр - e:', e)
+      return 'Email taken'
+    }
+  )
+}
 
 const composeValidators = (...validators) => (...rest) =>
   validators.reduce(
@@ -33,16 +44,17 @@ function renderInputWithError({
   input,
   type,
   label,
-  meta: { error, touched }
+  meta: { error, submitError, touched }
 }) {
   return (
     <label>
       {label}:
       <div>
         <input {...input} type={type} />
-        {touched && error && <p className="error">
-          {error}
-        </p>}
+        {touched && (error || submitError) &&
+          <p className="error">
+            {error || submitError}
+          </p>}
       </div>
     </label>
   )
@@ -57,8 +69,7 @@ class SignupForm extends Component {
         },
         e => {
           console.log('Второй параметр:', e.response.data)
-          /*throw new SubmissionError(mapErrors(e.response.data.errors))*/
-          throw new Error(mapErrors(e.response.data.errors))
+          return mapErrors(e.response.data.errors)
         }
       )
   };
@@ -66,7 +77,7 @@ class SignupForm extends Component {
   render() {
     return (
       <Form onSubmit={this.onSubmit}>
-        {({ handleSubmit }) => (
+        {({ handleSubmit, submitting, valid }) => (
           <form
             className="form"
             onSubmit={handleSubmit}
@@ -78,7 +89,8 @@ class SignupForm extends Component {
               label="Email"
               validate={composeValidators(
                 required,
-                isValidEmail
+                isValidEmail,
+                asyncValidateEmail
               )}
             />
             <Field
@@ -86,7 +98,7 @@ class SignupForm extends Component {
               type="password"
               name="password"
               label="Password"
-              validate={composeValidators(required)}
+              validate={required}
             />
             <Field
               render={renderInputWithError}
@@ -101,7 +113,7 @@ class SignupForm extends Component {
 
             <button
               type="submit"
-              /*disabled={submitting || !valid}*/
+              disabled={submitting || !valid}
             >
               Submit
             </button>
